@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>主播已经沉浸在自己的艺术里了</title>
+    <!-- 导入MedievalSharp字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+    <!-- 导入UnifrakturMaguntia字体(中世纪哥特风格) -->
+    <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+    <!-- 导入Cinzel Decorative字体(中世纪风格装饰字体) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* 系统光标备用方案 */
+        body {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%231a237e" d="M20.71 3.29c.39.39.39 1.02 0 1.41L12.41 13l1.42 1.42 8.29-8.29c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41L14.83 15l1.42 1.42 3.29-3.29c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41L17.24 18l-6-6L3 21l9-14.24 6.29-6.29c.39-.39 1.02-.39 1.41 0z"/></svg>'), auto;
+        }
+
+        /* 按钮悬停时变为金色羽毛笔 */
+        button:hover {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%23ffd700" d="M20.71 3.29c.39.39.39 1.02 0 1.41L12.41 13l1.42 1.42 8.29-8.29c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41L14.83 15l1.42 1.42 3.29-3.29c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41L17.24 18l-6-6L3 21l9-14.24 6.29-6.29c.39-.39 1.02-.39 1.41 0z"/></svg>'), pointer;
+        }
+    </style>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "Arial", sans-serif;
+            overflow-y: auto;
+            color: #fff;
+        }
+
+        /* 青金色系定义 */
+        :root {
+            --lapis-dark: #1a237e; /* 深青金石色 */
+            --lapis-medium: #283593; /* 中青金石色 */
+            --lapis-light: #3949ab; /* 浅青金石色 */
+            --gold-accent: #ffd700; /* 金色点缀 */
+        }
+
+        .light-effect {
+            will-change: transform, opacity; /* 提示浏览器优化 */
+        }
+
+        /* 修改后的青金色光源效果 */
+        .light-effect {
+            position: fixed;
+            top: 15%;
+            left: 10%;
+            width: 350px; /* 扩大光源尺寸 */
+            height: 350px;
+            background: radial-gradient( circle at center, rgba(58, 73, 171, 0.4) 0%, /* 青金石核心 */
+            rgba(58, 73, 171, 0.2) 30%, /* 青金石过渡 */
+            rgba(255, 215, 0, 0.15) 60%, /* 金色光晕 */
+            transparent 80% /* 完全透明外缘 */
+            );
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 5;
+            filter: blur(25px); /* 增加模糊度使光晕更柔和 */
+            animation: flicker 8s infinite alternate;
+        }
+
+        /* 修改后的辅助光源 */
+        .secondary-light {
+            position: fixed;
+            bottom: 10%;
+            right: 10%;
+            width: 400px; /* 扩大光源尺寸 */
+            height: 400px;
+            background: radial-gradient( circle at center, rgba(26, 35, 126, 0.2) 0%, rgba(255, 215, 0, 0.1) 50%, transparent 80% );
+            pointer-events: none;
+            z-index: 4;
+            filter: blur(30px); /* 增加模糊度 */
+            opacity: 0.8;
+        }
+
+        /* 烛光闪烁效果 */
+        @keyframes flicker {
+            0%, 100% {
+                opacity: 0.8;
+                transform: scale(1);
+            }
+
+            25% {
+                opacity: 0.9;
+                transform: scale(1.02);
+                background: radial-gradient( circle at center, rgba(58, 73, 171, 0.45) 0%, rgba(58, 73, 171, 0.25) 30%, rgba(255, 215, 0, 0.2) 60%, transparent 80% );
+            }
+
+            50% {
+                opacity: 0.7;
+                transform: scale(0.98);
+            }
+
+            75% {
+                opacity: 0.95;
+                transform: scale(1.01);
+            }
+        }
+
+        /* 为内容区域添加光照响应 */
+        .content-section {
+            box-shadow: 0 0 60px rgba(58, 73, 171, 0.15) inset, 0 0 30px rgba(255, 215, 0, 0.1) inset;
+            transition: box-shadow 0.5s ease;
+        }
+
+            /* 当内容激活时增强光照 */
+            .content-section.active {
+                box-shadow: 0 0 80px rgba(58, 73, 171, 0.2) inset, 0 0 40px rgba(255, 215, 0, 0.15) inset;
+            }
+
+        /* 按钮光照效果 */
+        .continue-button, .back-button, .end-button {
+            box-shadow: 0 0 15px rgba(58, 73, 171, 0.3), 0 0 5px rgba(255, 215, 0, 0.5) inset;
+        }
+
+        @media (max-width: 768px) {
+            .light-effect {
+                width: 250px;
+                height: 250px;
+                left: 5%;
+                top: 10%;
+                filter: blur(20px);
+            }
+
+            .secondary-light {
+                width: 280px;
+                height: 280px;
+                filter: blur(25px);
+                opacity: 0.6;
+            }
+
+            .content-section {
+                box-shadow: 0 0 30px rgba(58, 73, 171, 0.1) inset;
+            }
+        }
+
+        /* 全屏背景容器 */
+        .fullscreen-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* 背景图片 */
+        .bg-image {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: blur(0px);
+            transition: filter 0.8s ease;
+        }
+
+        /* 青金色覆盖层 */
+        .lapis-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--lapis-dark) 0%, var(--lapis-medium) 50%, var(--lapis-light) 100%);
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            z-index: 1;
+        }
+
+        /* 首屏标题容器 */
+        .header-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 2;
+            background-color: rgba(0, 0, 0, 0);
+            transition: background-color 0.5s ease;
+        }
+
+        /* 修改标题为MedievalSharp字体 */
+        h1 {
+            font-family: 'MedievalSharp', cursive;
+            color: #3949ab; /* 使用青金石主色 */
+            text-shadow: 2px 2px 0px #1a237e, /* 深青金石阴影 */
+            4px 4px 6px rgba(0, 0, 0, 0.4); /* 柔和阴影 */
+            font-size: clamp(2.8rem, 7vw, 4.5rem);
+            letter-spacing: 2px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.3, 1) 0.3s;
+            position: relative;
+            display: inline-block;
+            padding: 0 1.5rem;
+            margin-bottom: 1rem; /* 调整下边距 */
+            /* 添加青金色渐变效果 */
+            background: linear-gradient(135deg, #3949ab, #283593);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* 新增：前置图片容器 */
+        .pre-content-image {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3;
+            margin-top: 100vh; /* 放在首屏下方 */
+        }
+
+            .pre-content-image img {
+                max-width: 90%;
+                max-height: 90vh;
+                border-radius: 8px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+                border: 3px solid var(--gold-accent);
+                transition: filter 0.8s ease;
+            }
+
+        /* 内容区域 */
+        .content-section {
+            position: relative;
+            background:
+            /* 半透明羊皮纸纹理 */
+            url('https://www.transparenttextures.com/patterns/cream-paper.png'),
+            /* 青金色半透明白色底色 */
+            linear-gradient(rgba(255, 245, 235, 0.9), rgba(255, 245, 235, 0.9));
+            padding: 5rem 2rem;
+            z-index: 4;
+            min-height: 100vh;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
+            display: none; /* 默认隐藏所有内容区域 */
+            position: relative;
+            /* 新增边框效果 */
+            border-top: 1px solid rgba(26, 35, 126, 0.2);
+            border-bottom: 1px solid rgba(26, 35, 126, 0.2);
+        }
+
+        /* 为移动设备优化纹理 */
+        @media (max-width: 768px) {
+            .content-section {
+                background-size: 300px 300px; /* 缩小纹理尺寸提升性能 */
+            }
+        }
+
+        /* 活动内容区域 */
+        .content-section.active {
+            display: block;
+        }
+
+        /* 仅显示第二部分时的样式 */
+        body.show-second-only .header-container,
+        body.show-second-only .pre-content-image,
+        body.show-second-only #first-section {
+            display: none;
+        }
+
+        body.show-second-only #second-section {
+            display: block;
+            margin-top: 0;
+        }
+
+        /* 仅显示第三部分时的样式 */
+        body.show-third-only .header-container,
+        body.show-third-only .pre-content-image,
+        body.show-third-only #first-section,
+        body.show-third-only #second-section {
+            display: none;
+        }
+
+        body.show-third-only #third-section {
+            display: block;
+            margin-top: 0;
+        }
+
+        .content-text {
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.8;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        /* 修改"往昔"部分的字体为UnifrakturMaguntia */
+        #second-section .content-text,
+        #third-section .content-text {
+            font-family: 'Cinzel Decorative', 'UnifrakturMaguntia', cursive;
+            font-size: 1.2rem;
+            letter-spacing: 0.5px;
+            line-height: 2;
+        }
+
+            /* 标题使用更古典的字体 */
+            #second-section .content-text h2,
+            #third-section .content-text h2 {
+                font-family: 'UnifrakturMaguntia', cursive;
+                font-size: 2.5rem;
+                letter-spacing: 1px;
+            }
+
+        .content-text h2 {
+            color: var(--lapis-medium);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--gold-accent);
+            padding-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        /* 新增：内容图片样式 */
+        .content-image {
+            margin: 3rem 0;
+            text-align: center;
+            transition: filter 0.8s ease;
+        }
+
+            .content-image img {
+                max-width: 100%;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                display: block;
+                margin: 0 auto;
+                filter: blur(0px);
+                transition: filter 0.8s ease;
+            }
+
+            .content-image p {
+                font-size: 0.9rem;
+                color: #666;
+                margin-top: 0.5rem;
+            }
+
+        /* 添加视差容器样式 - 修改部分 */
+        .parallax-container {
+            position: relative;
+            height: 80vh;
+            overflow: hidden;
+            margin: 2rem 0;
+            border-radius: 0; /* 移除圆角 */
+            box-shadow: none; /* 移除阴影 */
+        }
+
+            /* 视差图片通用样式 - 修改部分 */
+            .parallax-container img {
+                position: absolute;
+                width: 100%; /* 覆盖整个屏幕宽度 */
+                height: auto;
+                max-width: none; /* 移除最大宽度限制 */
+                max-height: none; /* 移除最大高度限制 */
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                transition: all 0.8s ease;
+                object-fit: contain;
+            }
+
+        /* 图1 - 中间层 */
+        #parallax-img1, #parallax-img1-third {
+            z-index: 2;
+            opacity: 1;
+            filter: blur(0);
+        }
+
+        /* 图2 - 最下层 */
+        #parallax-img2, #parallax-img2-third {
+            z-index: 1;
+            opacity: 1;
+        }
+
+        /* 图3 - 最上层 */
+        #parallax-img3, #parallax-img3-third {
+            z-index: 3;
+            opacity: 1;
+            transform: translate(-50%, -50%) translateY(0);
+            box-shadow: none !important; /* 确保没有阴影 */
+            border: none !important; /* 确保没有边框 */
+        }
+
+        /* 第三部分单张图片样式 */
+        #third-section .content-image img {
+            position: static;
+            transform: none;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            filter: blur(0px);
+            transition: filter 0.8s ease;
+        }
+
+        /* 按钮容器样式 */
+        .button-container {
+            text-align: center;
+            margin: 3rem 0;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        /* 第一部分继续按钮容器 */
+        .continue-button-container {
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        /* 继续按钮样式 */
+        .continue-button, .back-button, .end-button {
+            font-family: 'MedievalSharp', cursive;
+            display: inline-block;
+            padding: 1rem 3rem;
+            background: linear-gradient(135deg, var(--lapis-medium), var(--lapis-dark));
+            color: var(--gold-accent);
+            font-size: 1.8rem;
+            text-decoration: none;
+            border-radius: 50px;
+            border: 2px solid var(--gold-accent);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            letter-spacing: 1px;
+            cursor: pointer;
+            outline: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .continue-button:hover, .back-button:hover, .end-button:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+                background: linear-gradient(135deg, var(--lapis-light), var(--lapis-medium));
+            }
+
+            .continue-button:active, .back-button:active, .end-button:active {
+                transform: translateY(1px);
+            }
+
+            .continue-button::before,
+            .back-button::before,
+            .end-button::before {
+                content: "";
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: linear-gradient( to bottom right, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.3), transparent );
+                transform: rotate(30deg);
+                transition: all 0.5s ease;
+            }
+
+            .continue-button:hover::before,
+            .back-button:hover::before,
+            .end-button:hover::before {
+                left: 100%;
+            }
+
+        /* 音频播放器样式 */
+        #bgm-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(26, 35, 126, 0.7);
+            border-radius: 50%;
+            border: 1px solid var(--gold-accent);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+            #bgm-player:hover {
+                transform: scale(1.1);
+                background-color: rgba(26, 35, 126, 0.9);
+            }
+
+            #bgm-player i {
+                color: var(--gold-accent);
+                font-size: 20px;
+            }
+
+        /* 音频播放器控制面板 */
+        #bgm-controls {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            background-color: rgba(26, 35, 126, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--gold-accent);
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 100;
+            width: 200px;
+        }
+
+            #bgm-controls.show {
+                display: flex;
+            }
+
+        #bgm-volume {
+            width: 100%;
+        }
+
+        #bgm-select {
+            width: 100%;
+            padding: 5px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--gold-accent);
+            border-radius: 5px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: clamp(2.2rem, 8vw, 3.5rem);
+                letter-spacing: 1px;
+                padding: 0 1rem;
+            }
+
+            .content-section {
+                padding: 3rem 1.5rem;
+            }
+
+            .content-text {
+                font-size: 1rem;
+            }
+
+            /* 移动设备调整"往昔"部分字体大小 */
+            #second-section .content-text,
+            #third-section .content-text {
+                font-size: 1rem;
+            }
+
+                #second-section .content-text h2,
+                #third-section .content-text h2 {
+                    font-size: 2rem;
+                }
+
+            .continue-button, .back-button, .end-button {
+                font-size: 1.5rem;
+                padding: 0.8rem 2rem;
+            }
+
+            .button-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            /* 移动设备调整音频播放器位置 */
+            #bgm-player {
+                bottom: 10px;
+                right: 10px;
+            }
+
+            #bgm-controls {
+                bottom: 60px;
+                right: 10px;
+                width: 180px;
+            }
+        }
+    </style>
+    <!-- 引入Font Awesome图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- 修改后的照明效果元素 -->
+    <div class="light-effect"></div>
+    <div class="secondary-light"></div>
+
+    <!-- 全屏背景容器 -->
+    <div class="fullscreen-bg">
+        <img class="bg-image" src="https://s21.ax1x.com/2025/06/13/pVAlRZ4.jpg" alt="君15">
+        <div class="lapis-overlay"></div>
+    </div>
+
+    <!-- 首屏标题容器 -->
+    <div class="header-container">
+        <h1>Pandora & Lullaby XV</h1>
+    </div>
+
+    <!-- 新增：前置图片 -->
+    <div class="pre-content-image" id="pre-image">
+        <img src="https://s21.ax1x.com/2025/06/14/pVAYkPH.jpg"
+             alt="青金"
+             loading="lazy">
+    </div>
+
+    <!-- 第一部分内容区域 -->
+    <div class="content-section active" id="first-section">
+        <div class="content-text">
+            <h2>青金人偶 Doll of Lapis Lazuli</h2>
+            <p>这个童话般的八音盒不需要上发条，其底座由纯白实木雕刻，雕刻的花纹上描有流金描线，底座上方由机关卡扣着半球形的透明玻璃穹顶。八音盒内是一座正在演奏竖琴的纯银少女雕塑，其主人将其命名为"青金"。</p>
+
+            <!-- 修改后的继续按钮容器 -->
+            <div class="continue-button-container">
+                <button id="continueButton" class="continue-button">Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第二部分内容区域 -->
+    <div class="content-section" id="second-section">
+        <!-- 新添加的图片 - 视差滚动效果 -->
+        <div class="content-image" id="memory-image">
+            <div class="parallax-container">
+                <!-- 图2 - 最下层 -->
+                <img id="parallax-img2" src="https://s21.ax1x.com/2025/06/14/pVAdWPU.jpg" alt="追忆中层" loading="lazy">
+                <!-- 图1 - 中间层 -->
+                <img id="parallax-img1" src="https://s21.ax1x.com/2025/06/14/pVAd25T.jpg" alt="追忆底层" loading="lazy">
+                <!-- 图3 - 最上层 -->
+                <img id="parallax-img3" src="https://s21.ax1x.com/2025/06/14/pVAdfGF.png" alt="追忆高层" loading="lazy">
+            </div>
+            <p></p>
+        </div>
+
+        <!-- 修改后的内容区域 -->
+        <div class="content-text">
+            <h2>"往昔" the Past（上）</h2>
+            <p>故事要从这里开始说起。话说，在许多年以前的欧葛依公国中，曾经有一位君临天下、芳龄十八的女王陛下。奢华的珠宝、漂亮的小马、独一无二的人偶，来自世界各地的奇物如流水一般被送进皇宫。'金钱不够挥霍，就从愚民身上榨取，所有胆敢反抗的人，一律格杀勿论'，傲慢的女王如此说道，对被压榨后的民间疾苦视而不见。</p>
+            <p>一个祥和的午后，修道院内的礼堂里坐了一圈懵懂的孩童，专注地看着台上和蔼的老修士不紧不慢地将手中的故事书翻过一页。</p>
+            <p>"十年过去了，无数苦难人民的哀嚎，却始终传不到皇宫中女王的耳里。于是，一位叫作索拉里的平民英雄挺身而出，在他的引领下，人民一个个举起刀剑，积蓄已久的愤怒蔓延向皇宫。面对团结一心的人民，常年疲于奔命的士兵根本不是对手，正义的烈焰将邪恶的皇宫燃烧殆尽，女王终于悔恨自己的所作所为，流下了忏悔的泪水，但为时已晚。在人民的见证下，作恶多端的女王被送上断头台处以死刑。故事的最后，人们拥护英雄索拉里成为新的国王，我们的公国从此翻开新的篇章。"</p>
+
+            <p>礼堂外，潘德莱拉只是静静地坐在椅子上，女人身着一身朴素的黑袍，眉眼间隐约能看出岁月的浅痕，脸上看不出任何表情，作为一位"死去"的前女王，听别人讲述自己的故事也是一种新奇的体验。一个月前，她以难民的身份来到了这座与世隔绝的修道院，这座修道院有着古老的历史，一位年迈的老修士独自照看这处远离纷争的世外桃源，老修士收留了她，就如同收留礼堂中的那群遗孤一样。</p>
+            <p>她摩挲着胸前精心保养的胸针，这枚胸针上的青金石曾经镶嵌在她少女时代最爱的人偶的眼睛里，大概是睹物思情罢，每当看见这抹深邃的青金色，自己总是会回忆起皇宫那段无忧无虑的时光。</p>
+            <p>"而这样的日子本该一直持续下去。"她对着空气喃喃自语，"但这一切都被那群无礼之徒毁了。"</p>
+            <p>直到听见一阵脚步声，潘德莱拉的表情骤然变得温和，嘴角也带上了浅浅的笑意，是老修士从礼堂内出来了。</p>
+            <p>"是你啊，潘德莱拉女士。我今早听说最后的前女王残党也快被剿灭了，公国总算是要真正安定下来了。"老修士眉眼间是慈爱与同情，"对于清剿残党，修道院帮不上忙，但我起码可以帮忙照顾这些孤儿们，我也要感谢您，这一个月您帮了我许多忙，您是位温柔且富有同情心的女士，对孩子们的关照有目共睹，孩子们非常喜欢而且信任您。"</p>
+            <p>"我也要感谢您愿意收留我，这是我应该做的。"</p>
+            <p>"对了，您觉得我的故事讲得怎么样？"</p>
+            <p>"...您的故事讲得很好，但内容上有一些小小的瑕疵。"潘德莱拉的声音如她展露出的气质一般温和轻柔，"据我所知，那位女王从未感到半分忏悔，因为直到死前，她也并不觉得她有罪。"</p>
+            <p>"是的，一位顽固的暴君。"老修士长叹一声，"不过毕竟是讲给孩子们听的故事，我希望他们都能成为知错能改的好孩子。"提到孩子们，老修士不自觉流露出和蔼的笑容，潘德莱拉也随即露出了温柔的微笑，看上去就像是一位再普通不过的善良女士，只不过若是细看，则会发现女人的眼中没有一丝笑意。</p>
+
+            <!-- 新增按钮容器 -->
+            <div class="button-container">
+                <button id="backButton" class="back-button">Back</button>
+                <button id="continueButton2" class="continue-button">Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第三部分内容区域 -->
+    <div class="content-section" id="third-section">
+        <!-- 新添加的图片 - 单张图片 -->
+        <div class="content-image" id="memory-image-third">
+            <img src="https://s21.ax1x.com/2025/06/13/pVAlRZ4.jpg" alt="追忆底层" loading="lazy">
+            <p></p>
+        </div>
+
+        <!-- 修改后的内容区域 -->
+        <div class="content-text">
+            <h2>"往昔" the Past（下）</h2>
+            <p>另一个故事发生在不久后的一个夜晚，今天是一个特殊的日子——老修士的生日，潘德莱拉与老修士正散步在去往礼堂的路上。</p>
+            <p>宁静的气氛被潘德莱拉突然开口打破，她的声音一改往日的轻柔，听起来低沉了些许，"我很想跟您讲一个故事，我想，今天是个很合适的日子。"</p>
+            <p>"无论何时，我都很乐意倾听，孩子。我能看出你一直有心事压在心底，虽然我只是个没什么用的老头子，但说出来总归畅快些。"老修士呵呵一笑，潘德莱拉也只是轻笑了一下，没有接话，而是缓慢地讲述了起来。</p>
+            <p>"十多年前，有一位家财万贯的父亲不幸早逝，所有的财产都由他的女儿继承，少女一夜之间拥有了数不尽的财富，周围的所有人都带上了假笑的面具，无论少女想要什么，都能立刻得到满足。直到有一天，一大群无礼的陌生人毫无征兆地闯入了少女的家，随之而来的还有熊熊的烈火无情地吞噬了少女的家。无礼之徒们自称自己的苦难全部源于少女的所作所为，高呼着宣判少女'有罪'，宣称少女的财富属于每一个人，就这么将无知又无助的少女判决死刑。</p>
+            <p>"没有人知道，半夜被俘的少女在空无一人的牢房等待黎明的死刑时，看着属于自己的财富被霸占，有多恐惧、多愤怒、多怨恨，最终，她的杀意引来了一位恶魔的注意，一场秘密的交易诞生了。"</p>
+            <p>老修士的笑容僵硬了一瞬，晚间的路上能感到一丝凉意，一阵风吹过，老修士情不自禁转过头看向身边的女人，潘德莱拉回以一个坦然的微笑，话题一转，"您似乎已经知道了，孩子们在礼堂给您准备了秘密生日惊喜，他们还小，几句话就说漏嘴了。"</p>
+            <p>"......是，他们还告诉了我，其实是女士您带着他们布置礼堂，教他们怎么唱庆生的歌曲，制作一份生日礼物，您很博学，他们都很信任您。"老修士的语气故作轻松，"会是什么样的礼物？"</p>
+            <p>潘德莱拉的语气又如同往常一般温和了起来，"您到了就知道了。还有时间，我们先把刚刚的故事讲完。</p>
+            <p>"没人知道少女许诺了什么才换来了恶魔的帮助，在那位恶魔的帮助下，众目睽睽之下死在断头台上的，只是一个被恶魔替换后的傀儡。真正的少女得以逃出生天，一夜之间变得一无所有，少女的心中充满怨恨，向那群无礼之徒复仇的怒火至今燃烧在少女的心中。"</p>
+            <p>此时两人恰好走到了礼堂外，迎接他们的不是孩子们天真的笑脸，而是一片火焰席卷后的焦土，老旧的礼堂彻底变成了一片废墟，仍有还未熄灭的火焰静静地燃烧在夜晚的礼堂中。老修士瞪大了错愕的双眼，喉咙也因极度的难以置信而发不出任何声音。</p>
+            <p>潘德莱拉平静地注视着眼前的一幕，双手交叠正在胸前，看上去就像一位女王般高贵优雅，"我时常在想，我该向哪些人复仇？应该是该死的索拉里，还有他愚蠢的追随者，背叛我的大臣也不能放过，那么我的其他子民们呢，我该怎么对待他们，他们又是怎么看待我的？在您的修道院，我得到了这个疑问的答案。"</p>
+            <p>"什么？不，不！孩子们呢......"老修士感到胸口有点喘不过气，他感觉自己已经知道了答案，但他不愿意承认。</p>
+            <p>潘德莱拉无动于衷地调正了胸针的位置，"我必须要感谢您，是您帮我下定了这个决心——是这个国家背叛了我，你们背叛了你们的女王，你们每一个人都是帮凶，所有人都要付出代价。您知道吗，这些孩子跟我很是亲密，我让他们在礼堂等着我去找您，他们真的一点也没怀疑，真是可爱极了。"</p>
+            <p>"这是你干的，是你！你这个——"老修士愤怒的话戛然而止，一只尖利的爪子蓦然从修士的背后贯穿了他的腹部，随着利爪抽出，老人闷哼一声重重倒在地上，艰难地喘息着，不甘地向女人抬起手。</p>
+            <p>尖爪的恶魔发出得手的狞笑，潘德莱拉从容地蹲下俯视着老人，温柔地握住了老修士的手，"几个月前的那个夜晚，我用禁书中的方法呼唤出了一位嗜好杀戮的恶魔，我们做了一笔交易，他会帮我从死刑脱身，而我将会在这个国家给他带来一场前所未有的杀戮，这就是我要你们付出的代价。而我感谢您，您将会是第一位见证者。"</p>
+            <p>女人还想说些什么，却发现老人早已停止了呼吸，无神的双眼虚焦在女人脸上，倒映出女人冷漠的脸。恶魔的狞笑回荡在修道院的废墟中，潘德莱拉站起来拍了拍肩上不存在的灰尘，毫无留恋地踏出了修道院，只留下轻的不能再轻的叹息。</p>
+            <p>"可惜了。"</p>
+
+            <!-- 新增按钮容器 -->
+            <div class="button-container">
+                <button id="backButton2" class="back-button">Back</button>
+                <button id="endButton" class="end-button">End</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BGM音频播放器 -->
+    <div id="bgm-player" title="背景音乐控制">
+        <i class="fas fa-music"></i>
+    </div>
+
+    <!-- BGM控制面板 -->
+    <div id="bgm-controls">
+        <select id="bgm-select">
+            <option value="https://upos-sz-mirrorhw.bilivideo.com/upgcxcode/85/18/1490981885/1490981885-1-16.mp4?e=ig8euxZM2rNcNbRVhwdVhwdlhWdVhwdVhoNvNC8BqJIzNbfq9rVEuxTEnE8L5F6VnEsSTx0vkX8fqJeYTj_lta53NCM=&uipk=5&nbs=1&deadline=1749979153&gen=playurlv2&os=alibv&oi=1939826609&trid=f5f854dac3034c5d9e0cfc96509229a4h&mid=0&platform=html5&og=cos&upsig=3c86a3b010128af615010349b8b9fb13&uparams=e,uipk,nbs,deadline,gen,os,oi,trid,mid,platform,og&bvc=vod&nettype=0&f=h_0_0&bw=13114&logo=80000000">夹带私货</option>
+            <option value="https://upos-sz-mirrorcos.bilivideo.com/upgcxcode/15/13/1490991315/1490991315-1-16.mp4?e=ig8euxZM2rNcNbRVhwdVhwdlhWdVhwdVhoNvNC8BqJIzNbfq9rVEuxTEnE8L5F6VnEsSTx0vkX8fqJeYTj_lta53NCM=&uipk=5&nbs=1&deadline=1749979448&gen=playurlv2&os=cosbv&oi=1782024106&trid=2d86f4c7809d4876a934332e46475b16h&mid=0&platform=html5&og=cos&upsig=3861b1cf96063c9f47fdb7e893437690&uparams=e,uipk,nbs,deadline,gen,os,oi,trid,mid,platform,og&bvc=vod&nettype=0&f=h_0_0&bw=33942&logo=80000000">还是私货</option>
+            <option value="https://upos-sz-mirrorhw.bilivideo.com/upgcxcode/94/27/1490992794/1490992794-1-16.mp4?e=ig8euxZM2rNcNbRVhwdVhwdlhWdVhwdVhoNvNC8BqJIzNbfq9rVEuxTEnE8L5F6VnEsSTx0vkX8fqJeYTj_lta53NCM=&uipk=5&nbs=1&deadline=1749979513&gen=playurlv2&os=08cbv&oi=1939826609&trid=6f2d268ac7f9410f8ee84719550119beh&mid=0&platform=html5&og=hw&upsig=19471fd36fc5cfeca403e9fe28738b87&uparams=e,uipk,nbs,deadline,gen,os,oi,trid,mid,platform,og&bvc=vod&nettype=0&f=h_0_0&bw=13227&logo=80000000">别管主播了</option>
+        </select>
+        <input type="range" id="bgm-volume" min="0" max="1" step="0.1" value="0.5">
+        <button id="bgm-toggle">暂停</button>
+    </div>
+
+    <audio id="bgm-audio" loop>
+        <source src="https://upos-sz-mirrorhw.bilivideo.com/upgcxcode/85/18/1490981885/1490981885-1-16.mp4?e=ig8euxZM2rNcNbRVhwdVhwdlhWdVhwdVhoNvNC8BqJIzNbfq9rVEuxTEnE8L5F6VnEsSTx0vkX8fqJeYTj_lta53NCM=&uipk=5&nbs=1&deadline=1749979153&gen=playurlv2&os=alibv&oi=1939826609&trid=f5f854dac3034c5d9e0cfc96509229a4h&mid=0&platform=html5&og=cos&upsig=3c86a3b010128af615010349b8b9fb13&uparams=e,uipk,nbs,deadline,gen,os,oi,trid,mid,platform,og&bvc=vod&nettype=0&f=h_0_0&bw=13114&logo=80000000" type="audio/mpeg">
+    </audio>
+
+    <script>
+        document.addEventListener('mousemove', function (e) {
+            const light = document.querySelector('.light-effect');
+            const x = e.clientX / window.innerWidth * 100;
+            const y = e.clientY / window.innerHeight * 100;
+
+            light.style.left = `${x}%`;
+            light.style.top = `${y}%`;
+
+            // 根据鼠标移动速度改变光照强度
+            const speed = Math.sqrt(e.movementX ** 2 + e.movementY ** 2);
+            light.style.opacity = 0.7 + Math.min(speed * 0.02, 0.3);
+        });
+
+        // 页面加载动画
+        document.addEventListener('DOMContentLoaded', function () {
+            // 检查URL哈希决定显示哪个部分
+            if (window.location.hash === '#second-section') {
+                initializeSecondSection();
+            } else if (window.location.hash === '#third-section') {
+                initializeThirdSection();
+            } else {
+                // 显示标题动画
+                setTimeout(function () {
+                    const title = document.querySelector('h1');
+                    title.style.opacity = '1';
+                    title.style.transform = 'translateY(0)';
+                    document.querySelector('.header-container').style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
+                }, 300);
+
+                // 初始化显示第一个内容区域
+                document.getElementById('first-section').classList.add('active');
+            }
+
+            // 初始化BGM
+            initBGM();
+        });
+
+        // 初始化第二部分
+        function initializeSecondSection() {
+            document.body.classList.add('show-second-only');
+            resetBackground();
+            resetParallaxImages();
+            forceRedraw();
+
+            // 重置滚动位置并触发一次滚动计算
+            window.scrollTo(0, 0);
+            setTimeout(handleScroll, 100); // 延迟确保滚动位置已更新
+        }
+
+        // 初始化第三部分
+        function initializeThirdSection() {
+            document.body.classList.add('show-third-only');
+            resetBackground();
+            // 重置滚动位置
+            window.scrollTo(0, 0);
+        }
+
+        // 重置背景效果的函数
+        function resetBackground() {
+            document.querySelector('.bg-image').style.filter = 'blur(0px)';
+            document.querySelector('.lapis-overlay').style.opacity = '0';
+        }
+
+        // 重置视差图片状态的函数(第二部分)
+        function resetParallaxImages() {
+            const img1 = document.getElementById('parallax-img1');
+            const img2 = document.getElementById('parallax-img2');
+            const img3 = document.getElementById('parallax-img3');
+
+            img1.style.opacity = '1';
+            img1.style.filter = 'blur(0px)';
+            img1.style.transform = 'translate(-50%, -50%)';
+
+            img2.style.opacity = '1';
+            img2.style.filter = 'blur(0px)';
+            img2.style.transform = 'translate(-50%, -50%)';
+
+            img3.style.opacity = '1';
+            img3.style.filter = 'blur(0px)';
+            img3.style.transform = 'translate(-50%, -50%)';
+        }
+
+        // 强制重绘函数(第二部分)
+        function forceRedraw() {
+            const container = document.querySelector('.parallax-container');
+            container.style.display = 'none';
+            container.offsetHeight; // 触发重绘
+            container.style.display = 'block';
+        }
+
+        // 滚动处理函数
+        function handleScroll() {
+            const scrollPosition = window.scrollY;
+            const windowHeight = window.innerHeight;
+            const scrollRatio = Math.min(scrollPosition / (windowHeight * 0.8), 1);
+
+            const bgImage = document.querySelector('.bg-image');
+            const lapisOverlay = document.querySelector('.lapis-overlay');
+
+            // 背景图片模糊效果
+            bgImage.style.filter = `blur(${scrollRatio * 6}px)`;
+
+            // 青金色覆盖层透明度
+            lapisOverlay.style.opacity = scrollRatio;
+
+            // 处理第二部分的视差效果
+            if (document.body.classList.contains('show-second-only')) {
+                const parallaxContainer = document.querySelector('#second-section .parallax-container');
+                if (parallaxContainer) {
+                    const containerRect = parallaxContainer.getBoundingClientRect();
+                    const containerTop = containerRect.top + window.scrollY; // 使用绝对位置计算
+                    const visibilityRatio = Math.min(scrollPosition / (windowHeight * 0.8), 1);
+
+                    // 图1 - 中间层图片效果
+                    const img1 = document.getElementById('parallax-img1');
+                    img1.style.opacity = 1 - visibilityRatio;
+                    img1.style.filter = `blur(${visibilityRatio * 10}px)`;
+
+                    // 图3 - 上层图片效果
+                    const img3 = document.getElementById('parallax-img3');
+                    img3.style.transform = `translate(-50%, -50%) translateY(${-300 * visibilityRatio}px)`;
+
+                    // 图2保持不变
+                    document.getElementById('parallax-img2').style.opacity = '1';
+                }
+            }
+
+            // 处理第三部分的图片模糊效果
+            if (document.body.classList.contains('show-third-only')) {
+                const thirdImage = document.querySelector('#third-section .content-image img');
+                if (thirdImage) {
+                    const containerRect = thirdImage.getBoundingClientRect();
+                    const containerTop = containerRect.top + window.scrollY;
+                    const visibilityRatio = Math.min(scrollPosition / (windowHeight * 0.8), 1);
+
+                    // 应用模糊效果
+                    thirdImage.style.filter = `blur(${visibilityRatio * 6}px)`;
+                }
+            }
+        }
+
+        // 继续按钮功能(第一部分)
+        document.getElementById('continueButton').addEventListener('click', function () {
+            // 添加URL哈希
+            window.location.hash = 'second-section';
+            // 初始化第二部分
+            initializeSecondSection();
+        });
+
+        // 返回按钮功能(第二部分)
+        document.getElementById('backButton').addEventListener('click', function () {
+            // 移除URL哈希
+            window.location.hash = '';
+            // 重置页面显示
+            document.body.classList.remove('show-second-only');
+            // 显示第一部分
+            document.getElementById('first-section').classList.add('active');
+            // 重置背景
+            resetBackground();
+        });
+
+        // 继续按钮功能(第二部分)
+        document.getElementById('continueButton2').addEventListener('click', function () {
+            // 添加URL哈希
+            window.location.hash = 'third-section';
+            // 初始化第三部分
+            initializeThirdSection();
+        });
+
+        // 返回按钮功能(第三部分)
+        document.getElementById('backButton2').addEventListener('click', function () {
+            // 添加URL哈希
+            window.location.hash = 'second-section';
+            // 重新加载页面以完全重置第二部分
+            location.reload();
+        });
+
+        // End按钮功能(第三部分)
+        document.getElementById('endButton').addEventListener('click', function () {
+            // 关闭网页
+            window.close();
+        });
+
+        // 监听滚动事件
+        window.addEventListener('scroll', handleScroll);
+
+        // BGM控制功能
+        function initBGM() {
+            const bgmPlayer = document.getElementById('bgm-player');
+            const bgmControls = document.getElementById('bgm-controls');
+            const bgmAudio = document.getElementById('bgm-audio');
+            const bgmToggle = document.getElementById('bgm-toggle');
+            const bgmSelect = document.getElementById('bgm-select');
+            const bgmVolume = document.getElementById('bgm-volume');
+
+            // 默认音量
+            bgmAudio.volume = 0.5;
+
+            // 点击播放器图标显示/隐藏控制面板
+            bgmPlayer.addEventListener('click', function () {
+                bgmControls.classList.toggle('show');
+            });
+
+            // 切换播放/暂停
+            bgmToggle.addEventListener('click', function () {
+                if (bgmAudio.paused) {
+                    bgmAudio.play();
+                    bgmToggle.textContent = '暂停';
+                } else {
+                    bgmAudio.pause();
+                    bgmToggle.textContent = '播放';
+                }
+            });
+
+            // 改变音量
+            bgmVolume.addEventListener('input', function () {
+                bgmAudio.volume = this.value;
+            });
+
+            // 改变音乐
+            bgmSelect.addEventListener('change', function () {
+                bgmAudio.src = this.value;
+                bgmAudio.play();
+                bgmToggle.textContent = '暂停';
+            });
+
+            // 自动播放音乐(需要用户交互后)
+            document.body.addEventListener('click', function initAudio() {
+                // 尝试播放音频
+                bgmAudio.play().then(() => {
+                    bgmToggle.textContent = '暂停';
+                }).catch(error => {
+                    console.log('自动播放被阻止:', error);
+                });
+                // 移除事件监听器，只尝试一次
+                document.body.removeEventListener('click', initAudio);
+            }, { once: true });
+        }
+    </script>
+</body>
+</html>
